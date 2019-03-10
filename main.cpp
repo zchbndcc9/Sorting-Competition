@@ -6,7 +6,8 @@ using namespace std;
 
 static char* readInAll(char *fileName);
 void dumpFile(char*, char*);
-void gsdRadixSort(DSVector<char*> &);
+void lsdRadixSort(DSVector<char*> &);
+void countingSort(DSVector<char*> &);
 
 int main() {
     DSVector<char*> buckets[30];
@@ -25,11 +26,18 @@ int main() {
     //Perform a radix sort on each bucket
     for(int i = 0; i < 30; i++) {
         if(buckets[i].getSize() != 0)
-            gsdRadixSort(buckets[i]);
+            lsdRadixSort(buckets[i]);
     }
 
+    ofstream output("output.txt");
     //Dump sorted words to file
-    delete buffer;
+    for(int i = 0; i < 30; i++) {
+        for(int j = 0; j < buckets[i].getSize(); j++) {
+            output << buckets[i][j] << endl;
+        }
+    }
+
+    delete [] buffer;
 }
 
 static char* readInAll(char* fileName) {
@@ -43,12 +51,13 @@ static char* readInAll(char* fileName) {
     return container;
 }
 
-void gsdRadixSort(DSVector<char *>& vec) {
+void lsdRadixSort(DSVector<char *>& vec) {
    // Determine max length of string
-   int len = strlen(vec[0]);
-    for(int i = 0; i < len; i++) {
+    int len = strlen(vec[0]);
+    char** temp = new char*[vec.getSize()];
+
+    for(int i = len - 1; i >= 0; i--) {
         int counter[256] = {};
-        char** temp = new char*[vec.getSize()];
 
         for(int j = 0; j < vec.getSize(); j++) {
             counter[vec[j][i]]++;
@@ -66,8 +75,7 @@ void gsdRadixSort(DSVector<char *>& vec) {
         for(int j = 0; j < vec.getSize(); j++) {
             vec[j] = temp[j];
         }
-
-        delete[] temp;
     }
 
+    delete[] temp;
 }
