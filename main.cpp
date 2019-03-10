@@ -6,7 +6,7 @@ using namespace std;
 
 static char* readInAll(char *fileName);
 void dumpFile(char*, char*);
-void radixSort(DSVector<char*>);
+void gsdRadixSort(DSVector<char*> &);
 
 int main() {
     DSVector<char*> buckets[30];
@@ -22,7 +22,12 @@ int main() {
         token = strtok(NULL, "\n");
     }
 
-    //Merge sort each bucket
+    //Perform a radix sort on each bucket
+    for(int i = 0; i < 30; i++) {
+        if(buckets[i].getSize() != 0)
+            gsdRadixSort(buckets[i]);
+    }
+
     //Dump sorted words to file
     delete buffer;
 }
@@ -38,6 +43,31 @@ static char* readInAll(char* fileName) {
     return container;
 }
 
-void radixSort(DSVector<char *> vec) {
+void gsdRadixSort(DSVector<char *>& vec) {
+   // Determine max length of string
+   int len = strlen(vec[0]);
+    for(int i = 0; i < len; i++) {
+        int counter[256] = {};
+        char** temp = new char*[vec.getSize()];
+
+        for(int j = 0; j < vec.getSize(); j++) {
+            counter[vec[j][i]]++;
+        }
+
+        for(int j = 1; j < 256; j++) {
+            counter[j]+=counter[j-1];
+        }
+
+        for(int j = 0; j < vec.getSize(); j++) {
+            temp[counter[vec[j][i]]-1] = vec[j];
+            counter[vec[j][i]]--;
+        }
+
+        for(int j = 0; j < vec.getSize(); j++) {
+            vec[j] = temp[j];
+        }
+
+        delete[] temp;
+    }
 
 }
