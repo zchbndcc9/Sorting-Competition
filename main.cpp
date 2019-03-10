@@ -6,7 +6,7 @@ using namespace std;
 
 static char* readInAll(char *fileName);
 void dumpFile(char*, char*);
-void mergeSort(DSVector<char*>);
+void radixSort(DSVector<char*>);
 
 int main() {
     DSVector<char*> buckets[30];
@@ -36,4 +36,8 @@ static char* readInAll(char* fileName) {
     buffer.read(container, length);
 
     return container;
+}
+
+void radixSort(DSVector<char *> vec) {
+
 }
