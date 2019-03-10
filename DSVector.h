@@ -262,7 +262,7 @@ bool DSVector<T>::recursiveBinarySearch(int& memberIndex, int low, int high, con
 //Does this look ok? Copying once I've already allocated the space
 template <class T>
 void DSVector<T>::copyVec(T* lhs, const T* rhs){
-    for(int i = 0; i < capacity; i++){
+    for(int i = 0; i < size; i++){
         lhs[i] = rhs[i];
     }
 }
