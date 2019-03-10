@@ -4,6 +4,8 @@ using namespace std;
 
 int main()
 {
-    cout << "Hello World!" << endl;
-    return 0;
+    //Read in file into buffer
+    //Parse buffer to extract words (Keep \n)
+        //Put words into buffer
+    //Merge sort each bucket
 }
