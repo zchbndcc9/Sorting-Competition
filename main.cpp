@@ -13,14 +13,25 @@ int main() {
     DSVector<char*> buckets[30];
 
     //Read in file into buffer
-    char* buffer = readInAll("test.txt");
+    char* buffer = readInAll("words_clean.txt");
+
+    int count = 0,
+        numWords = 0,
+        numToSort = 0;
 
     //Parse buffer to extract words
     char* token = strtok(buffer, "\n");
     while(token != NULL) {
-        int len = strlen(token);
-        buckets[len - 1].push(token);
-        token = strtok(NULL, "\n");
+        if(count == 0) {
+            numWords = atoi(token);
+        } else if(count == 1) {
+            numToSort = atoi(token);
+        } else {
+            int len = strlen(token);
+            buckets[len - 1].push(token);
+            token = strtok(NULL, "\n");
+        }
+        count++;
     }
 
     //Perform a radix sort on each bucket
@@ -68,8 +79,7 @@ void lsdRadixSort(DSVector<char *>& vec) {
         }
 
         for(int j = 0; j < vec.getSize(); j++) {
-            temp[counter[vec[j][i]]-1] = vec[j];
-            counter[vec[j][i]]--;
+            temp[counter[vec[j][i] - 1]++] = vec[j];
         }
 
         for(int j = 0; j < vec.getSize(); j++) {
