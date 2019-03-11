@@ -30,7 +30,7 @@ void parseBuffer(char* buffer, DSVector<char*>* vec) {
         numToSort = 0;
 
     //Parse buffer to extract words
-    char* token = strtok(buffer, "\n");
+    char* token = strtok(buffer, "\r\n");
     while(token != NULL) {
         if(count == 0) {
             numWords = atoi(token);
@@ -38,10 +38,10 @@ void parseBuffer(char* buffer, DSVector<char*>* vec) {
             numToSort = atoi(token);
         } else {
             int len = strlen(token);
-            if(len < 31){
+            if(len < 31 && len > 0){
                 vec[len - 1].push(token);
             }
-            token = strtok(NULL, "\n");
+            token = strtok(NULL, "\r\n");
         }
         count++;
     }
@@ -60,8 +60,9 @@ void writeFile(const char* file, DSVector<char*>* vec) {
     ofstream output(file);
     //Dump sorted words to file
     for(int i = 0; i < 30; i++) {
-        for(int j = 0; j < vec[i].getSize(); j++) {
-            output << vec[i][j] << endl;
+        int vecSize = vec[i].getSize();
+        for(int j = 0; j < vecSize; j++) {
+            output << vec[i][j] << '\n';
         }
     }
 }
@@ -80,13 +81,14 @@ static char* readInAllFile(const char* fileName) {
 void lsdRadixSort(DSVector<char *>& vec) {
    // Determine max length of string
     int len = strlen(vec[0]);
+    int vecSize = vec.getSize();
     char** arr = vec.getData();
-    char** temp = new char*[vec.getSize()];
+    char** temp = new char*[vecSize];
 
     for(int i = len - 1; i >= 0; i--) {
         int counter[256] = {};
 
-        for(int j = 0; j < vec.getSize(); j++) {
+        for(int j = 0; j < vecSize; j++) {
             counter[arr[j][i]]++;
         }
 
@@ -94,13 +96,12 @@ void lsdRadixSort(DSVector<char *>& vec) {
             counter[j]+=counter[j-1];
         }
 
-        for(int j = 0; j < vec.getSize(); j++) {
+        for(int j = 0; j < vecSize; j++) {
             temp[counter[arr[j][i] - 1]++] = arr[j];
         }
 
-        for(int j = 0; j < vec.getSize(); j++) {
-            arr[j] = temp[j];
-        }
+        // Direct copy over to arr
+        memcpy(arr, temp, vecSize*sizeof(int));
     }
 
     delete[] temp;
