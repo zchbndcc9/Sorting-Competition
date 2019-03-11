@@ -22,6 +22,7 @@ public:
     //Copy contents of vec to current vec object
     DSVector<T>& operator=(const DSVector&);
 
+    T* getData();
     //Returns size of vec
     int getSize();
     //Returns capacity of vec
@@ -113,13 +114,9 @@ template <class T>
 T& DSVector<T>::operator[](const int index){
     //If user tries to access index of vec that is greater than the size,
     //will throw errror
-    if(index >= size){
+    if(index >= size) throw("Invalid access");
 
-
-    }else{
-        return *(vecPtr + index);
-    }
-
+    return vecPtr[index];
 }
 
 template <class T>
@@ -139,6 +136,11 @@ template <class T>
 T& DSVector<T>::front(){
     return *vecPtr;
 
+}
+
+template <class T>
+T* DSVector<T>::getData() {
+    return vecPtr;
 }
 
 template <class T>
