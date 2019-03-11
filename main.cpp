@@ -7,7 +7,6 @@ using namespace std;
 static char* readInAll(char *fileName);
 void dumpFile(char*, char*);
 void lsdRadixSort(DSVector<char*> &);
-void countingSort(DSVector<char*> &);
 
 int main() {
     DSVector<char*> buckets[30];
