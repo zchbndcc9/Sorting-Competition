@@ -4,16 +4,27 @@
 #include "DSVector.h"
 using namespace std;
 
-static char* readInAll(char *fileName);
+void parseBuffer(char*, DSVector<char*>*);
+void sortBuckets(DSVector<char*>*);
+void writeFile(const char*, DSVector<char*>*);
+
+static char* readInAllFile(const char*);
 void dumpFile(char*, char*);
 void lsdRadixSort(DSVector<char*> &);
 
 int main() {
-    DSVector<char*> buckets[30];
+    DSVector<char*> buckets[30](200000);
 
-    //Read in file into buffer
-    char* buffer = readInAll("words_clean.txt");
+    char* buffer = readInAllFile("1.1million_word_list.txt");
 
+    parseBuffer(buffer, buckets);
+    sortBuckets(buckets);
+    writeFile("output.txt", buckets);
+
+    delete[] buffer;
+}
+
+void parseBuffer(char* buffer, DSVector<char*>* vec) {
     int count = 0,
         numWords = 0,
         numToSort = 0;
@@ -27,30 +38,35 @@ int main() {
             numToSort = atoi(token);
         } else {
             int len = strlen(token);
-            buckets[len - 1].push(token);
+            if(len < 31){
+                vec[len - 1].push(token);
+            }
             token = strtok(NULL, "\n");
         }
         count++;
     }
-
-    //Perform a radix sort on each bucket
-    for(int i = 0; i < 30; i++) {
-        if(buckets[i].getSize() != 0)
-            lsdRadixSort(buckets[i]);
-    }
-
-    ofstream output("output.txt");
-    //Dump sorted words to file
-    for(int i = 0; i < 30; i++) {
-        for(int j = 0; j < buckets[i].getSize(); j++) {
-            output << buckets[i][j] << endl;
-        }
-    }
-
-    delete [] buffer;
 }
 
-static char* readInAll(char* fileName) {
+
+void sortBuckets(DSVector<char*>* vec) {
+    //Perform a radix sort on each bucket
+    for(int i = 0; i < 30; i++) {
+        if(vec[i].getSize() != 0)
+            lsdRadixSort(vec[i]);
+    }
+}
+
+void writeFile(const char* file, DSVector<char*>* vec) {
+    ofstream output(file);
+    //Dump sorted words to file
+    for(int i = 0; i < 30; i++) {
+        for(int j = 0; j < vec[i].getSize(); j++) {
+            output << vec[i][j] << endl;
+        }
+    }
+}
+
+static char* readInAllFile(const char* fileName) {
     ifstream buffer(fileName, ios::binary | ios::ate);
     streamsize length = buffer.tellg();
 
@@ -64,13 +80,14 @@ static char* readInAll(char* fileName) {
 void lsdRadixSort(DSVector<char *>& vec) {
    // Determine max length of string
     int len = strlen(vec[0]);
+    char** arr = vec.getData();
     char** temp = new char*[vec.getSize()];
 
     for(int i = len - 1; i >= 0; i--) {
         int counter[256] = {};
 
         for(int j = 0; j < vec.getSize(); j++) {
-            counter[vec[j][i]]++;
+            counter[arr[j][i]]++;
         }
 
         for(int j = 1; j < 256; j++) {
@@ -78,11 +95,11 @@ void lsdRadixSort(DSVector<char *>& vec) {
         }
 
         for(int j = 0; j < vec.getSize(); j++) {
-            temp[counter[vec[j][i] - 1]++] = vec[j];
+            temp[counter[arr[j][i] - 1]++] = arr[j];
         }
 
         for(int j = 0; j < vec.getSize(); j++) {
-            vec[j] = temp[j];
+            arr[j] = temp[j];
         }
     }
 
